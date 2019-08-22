@@ -34,8 +34,9 @@ import org.testng.annotations.Test
 import java.nio.charset.StandardCharsets
 import java.security.Key
 import java.security.KeyPair
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import org.threeten.bp.Instant
+import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.DateTimeUtils
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.notNullValue
@@ -86,9 +87,9 @@ abstract class TokenVerifierTestSupport {
         return Jwts.builder()
                 .setSubject("joe.coder@example.com")
                 .setIssuer(TEST_ISSUER)
-                .setIssuedAt(Date.from(now))
-                .setNotBefore(Date.from(now))
-                .setExpiration(Date.from(now.plus(1L, ChronoUnit.HOURS)))
+                .setIssuedAt(DateTimeUtils.toDate(now))
+                .setNotBefore(DateTimeUtils.toDate(now))
+                .setExpiration(DateTimeUtils.toDate(now.plus(1L, ChronoUnit.HOURS)))
                 .setHeader(Jwts.jwsHeader()
                 .setKeyId(TEST_PUB_KEY_ID))
     }
@@ -197,7 +198,7 @@ abstract class TokenVerifierTestSupport {
         Instant now = Instant.now()
         TestUtil.expect JwtVerificationException, {
             buildThenDecodeToken(baseJwtBuilder()
-                    .setExpiration(Date.from(now.minus(10L, ChronoUnit.SECONDS))))
+                    .setExpiration(DateTimeUtils.toDate(now.minus(10L, ChronoUnit.SECONDS))))
         }
     }
 
@@ -205,7 +206,7 @@ abstract class TokenVerifierTestSupport {
     void expiredUnderLeeway() {
         Instant now = Instant.now()
         buildThenDecodeToken(baseJwtBuilder()
-                .setExpiration(Date.from(now.minus(8L, ChronoUnit.SECONDS))))
+                .setExpiration(DateTimeUtils.toDate(now.minus(8L, ChronoUnit.SECONDS))))
     }
 
 
@@ -214,7 +215,7 @@ abstract class TokenVerifierTestSupport {
         Instant now = Instant.now()
         TestUtil.expect JwtVerificationException, {
             buildThenDecodeToken(baseJwtBuilder()
-                    .setNotBefore(Date.from(now.plus(11L, ChronoUnit.SECONDS))))
+                    .setNotBefore(DateTimeUtils.toDate(now.plus(11L, ChronoUnit.SECONDS))))
         }
     }
 
@@ -222,7 +223,7 @@ abstract class TokenVerifierTestSupport {
     void notBeforeUnderLeeway() {
         Instant now = Instant.now()
         buildThenDecodeToken(baseJwtBuilder()
-                .setNotBefore(Date.from(now.minus(9L, ChronoUnit.SECONDS))))
+                .setNotBefore(DateTimeUtils.toDate(now.minus(9L, ChronoUnit.SECONDS))))
     }
 
     String buildJwtWithFudgedHeader(String headerJson, String body) {

@@ -18,11 +18,13 @@ package com.okta.jwt.impl.jjwt;
 import com.okta.jwt.IdTokenVerifier;
 import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerificationException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.IncorrectClaimException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.lang.Objects;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
 
 /**
  * Classes in this `impl` implementation package may change in NON backward compatible way, and should ONLY be used as
@@ -43,14 +45,17 @@ public class JjwtIdTokenVerifier extends TokenVerifierSupport
     }
 
     @Override
-    public Jwt decode(String idToken, String nonce) throws JwtVerificationException {
+    public Jwt decode(String idToken, final String nonce) throws JwtVerificationException {
        return decode(idToken, parser(), ClaimsValidator.compositeClaimsValidator(
                new ClaimsValidator.ContainsAudienceClaimsValidator(clientId),
-               jws -> {
+               new ClaimsValidator() {
+                   @Override
+                   public void validateClaims(Jws<Claims> jws) {
                    String actualNonce = jws.getBody().get("nonce", String.class);
                    if (!Objects.nullSafeEquals(actualNonce, nonce)) {
                        throw new IncorrectClaimException(jws.getHeader(), jws.getBody(), "Claim `nonce` does not match expected value. Note: a `null` nonce is only valid when both the expected and actual values are `null`.");
                    }
-               }));
+               }
+           }));
     }
 }

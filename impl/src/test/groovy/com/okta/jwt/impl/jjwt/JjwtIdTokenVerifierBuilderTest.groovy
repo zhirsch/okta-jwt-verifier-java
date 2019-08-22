@@ -18,7 +18,7 @@ package com.okta.jwt.impl.jjwt
 import com.okta.jwt.impl.TestUtil
 import org.testng.annotations.Test
 
-import java.time.Duration
+import org.threeten.bp.Duration
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.instanceOf

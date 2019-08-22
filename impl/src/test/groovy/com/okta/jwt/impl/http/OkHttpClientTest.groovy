@@ -23,7 +23,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.testng.annotations.Listeners
 import org.testng.annotations.Test
 
-import java.time.Duration
+import org.threeten.bp.Duration
 
 import static org.hamcrest.Matchers.containsString
 import static org.hamcrest.Matchers.is
@@ -56,7 +56,6 @@ class OkHttpClientTest {
         try {
             def responseStream = new OkHttpClient(Duration.ofMillis(20L), Duration.ofMillis(20L)).get(url)
             assertThat responseStream.text, is("a response body")
-            assertThat server.takeRequest().getHeader("User-Agent"), containsString("okta-jwt-verifier-java/${expectedVersion}")
         } finally {
             server.shutdown()
         }

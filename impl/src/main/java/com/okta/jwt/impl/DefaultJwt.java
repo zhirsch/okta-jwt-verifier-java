@@ -17,7 +17,7 @@ package com.okta.jwt.impl;
 
 import com.okta.jwt.Jwt;
 
-import java.time.Instant;
+import org.threeten.bp.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class DefaultJwt implements Jwt {
         this.tokenValue = tokenValue;
         this.issuedAt = issuedAt;
         this.expiresAt = expiresAt;
-        this.claims = Collections.unmodifiableMap(new LinkedHashMap<>(claims));
+        this.claims = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(claims));
     }
 
     @Override

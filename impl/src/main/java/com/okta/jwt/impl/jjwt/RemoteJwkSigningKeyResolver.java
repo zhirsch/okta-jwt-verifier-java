@@ -17,6 +17,7 @@ package com.okta.jwt.impl.jjwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.okta.jwt.impl.http.HttpClient;
+import com.okta.jwt.impl.jjwt.models.JwkKey;
 import com.okta.jwt.impl.jjwt.models.JwkKeys;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
@@ -32,18 +33,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 final class RemoteJwkSigningKeyResolver implements SigningKeyResolver {
 
     private final URL jwkUri;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Map<String, Key> keyMap = new HashMap<>();
+    private final Map<String, Key> keyMap = new HashMap<String, Key>();
 
     RemoteJwkSigningKeyResolver(URL jwkUri, HttpClient httpClient) {
         this.jwkUri = jwkUri;
@@ -73,26 +72,30 @@ final class RemoteJwkSigningKeyResolver implements SigningKeyResolver {
 
     private void updateKeys() {
          try {
-            Map<String, Key> newKeys =
-            objectMapper.readValue(httpClient.get(jwkUri), JwkKeys.class).getKeys().stream()
-                .filter(jwkKey -> "sig".equals(jwkKey.getPublicKeyUse()))
-                .filter(jwkKey -> "RSA".equals(jwkKey.getKeyType()))
-                .map(jwkKey -> {
-                    // filter use and type
-                    BigInteger modulus = base64ToBigInteger(jwkKey.getPublicKeyModulus());
-                    BigInteger exponent = base64ToBigInteger(jwkKey.getPublicKeyExponent());
+            Map<String, Key> newKeys = new HashMap<String, Key>();
+            for (JwkKey jwkKey : objectMapper.readValue(httpClient.get(jwkUri), JwkKeys.class).getKeys()) {
+                if (!"sig".equals(jwkKey.getPublicKeyUse())) {
+                    continue;
+                }
+                if (!"RSA".equals(jwkKey.getKeyType())) {
+                    continue;
+                }
+                // filter use and type
+                BigInteger modulus = base64ToBigInteger(jwkKey.getPublicKeyModulus());
+                BigInteger exponent = base64ToBigInteger(jwkKey.getPublicKeyExponent());
 
-                    RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(modulus, exponent);
+                RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(modulus, exponent);
 
-                    try {
-                        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-                        PublicKey publicKey = keyFactory.generatePublic(rsaPublicKeySpec);
-                        return new AbstractMap.SimpleEntry<String, Key>(jwkKey.getKeyId(), publicKey);
-                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                        throw new IllegalStateException("Failed to parse public key");
-                    }
-                })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                try {
+                    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                    PublicKey publicKey = keyFactory.generatePublic(rsaPublicKeySpec);
+                    newKeys.put(jwkKey.getKeyId(), publicKey);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new IllegalStateException("Failed to parse public key");
+                } catch (InvalidKeySpecException e) {
+                    throw new IllegalStateException("Failed to parse public key");
+                }
+            }
 
             keyMap.clear();
             keyMap.putAll(newKeys);

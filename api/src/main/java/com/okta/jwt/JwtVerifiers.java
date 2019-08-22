@@ -16,7 +16,6 @@
 package com.okta.jwt;
 
 import java.util.ServiceLoader;
-import java.util.stream.StreamSupport;
 
 /**
  * Utility class to help load implementations of {@link IdTokenVerifier.Builder} and {@link AccessTokenVerifier.Builder}.
@@ -54,10 +53,24 @@ public final class JwtVerifiers {
     private static <T> T loadService(Class<T> service) {
         ServiceLoader<T> serviceLoader = ServiceLoader.load(service);
 
-        return StreamSupport.stream(serviceLoader.spliterator(), false)
-                .reduce((a, b) -> { throw new IllegalStateException("Multiple implementations of `" + service + "` " +
-                            "class found on the classpath. There can be only one."); })
-                .orElseThrow(() -> new IllegalStateException("No `" + service + "` implementation found on the classpath. " +
-                            "Have you remembered to include the okta-jwt-verifier-impl.jar in your runtime classpath?"));
+        T instance = null;
+        for (T thing : serviceLoader) {
+            if (instance != null) {
+                throw new IllegalStateException(
+                    "Multiple implementations of `"
+                        + service
+                        + "` "
+                        + "class found on the classpath. There can be only one.");
+            }
+            instance = thing;
+        }
+        if (instance == null) {
+            throw new IllegalStateException(
+                "No `"
+                    + service
+                    + "` implementation found on the classpath. "
+                    + "Have you remembered to include the okta-jwt-verifier-impl.jar in your runtime classpath?");
+        }
+        return instance;
     }
 }

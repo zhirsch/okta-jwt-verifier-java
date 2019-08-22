@@ -19,7 +19,7 @@ import com.okta.jwt.AccessTokenVerifier;
 import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerifiers;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
 
 public class QuickStartExample {
 

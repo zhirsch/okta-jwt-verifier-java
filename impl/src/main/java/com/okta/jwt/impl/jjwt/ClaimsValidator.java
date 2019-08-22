@@ -25,20 +25,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@FunctionalInterface
-interface ClaimsValidator {
+abstract class ClaimsValidator {
 
-    void validateClaims(Jws<Claims> jws);
+    abstract void validateClaims(Jws<Claims> jws);
 
     static ClaimsValidator compositeClaimsValidator(ClaimsValidator... claimsValidators) {
-        return new CompositeClaimsValidator(Arrays.stream(claimsValidators).collect(Collectors.toSet()));
+        return new CompositeClaimsValidator(new HashSet<ClaimsValidator>(Arrays.asList(claimsValidators)));
     }
 
-    final class CompositeClaimsValidator implements ClaimsValidator {
+    final static class CompositeClaimsValidator extends ClaimsValidator {
 
-        private final Set<ClaimsValidator> claimsValidators = new HashSet<>();
+        private final Set<ClaimsValidator> claimsValidators = new HashSet<ClaimsValidator>();
 
         CompositeClaimsValidator(Set<ClaimsValidator> claimsValidators) {
             this.claimsValidators.addAll(claimsValidators);
@@ -46,11 +44,13 @@ interface ClaimsValidator {
 
         @Override
         public void validateClaims(Jws<Claims> jws) {
-            claimsValidators.forEach(claimsValidator -> claimsValidator.validateClaims(jws));
+            for (ClaimsValidator claimsValidator : claimsValidators) {
+                claimsValidator.validateClaims(jws);
+            }
         }
     }
 
-    final class ContainsAudienceClaimsValidator implements ClaimsValidator {
+    final static class ContainsAudienceClaimsValidator extends ClaimsValidator {
 
         private final String expectedAudience;
 

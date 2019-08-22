@@ -15,7 +15,7 @@
  */
 package com.okta.jwt;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
 
 /**
  * JWT Verifier Builder support class (defines common properties used for general JWT validation).

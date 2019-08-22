@@ -22,7 +22,7 @@ import io.jsonwebtoken.SigningKeyResolver;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
+import org.threeten.bp.Duration;
 
 abstract class BaseVerifierBuilderSupport<B extends VerifierBuilderSupport, R> implements VerifierBuilderSupport<B, R> {
 

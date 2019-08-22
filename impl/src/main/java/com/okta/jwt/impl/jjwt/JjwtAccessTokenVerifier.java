@@ -20,7 +20,7 @@ import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerificationException;
 import io.jsonwebtoken.SigningKeyResolver;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
 
 /**
  * Classes in this `impl` implementation package may change in NON backward compatible way, and should ONLY be used as

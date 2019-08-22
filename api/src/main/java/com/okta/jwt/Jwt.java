@@ -15,7 +15,7 @@
  */
 package com.okta.jwt;
 
-import java.time.Instant;
+import org.threeten.bp.Instant;
 import java.util.Map;
 
 /**

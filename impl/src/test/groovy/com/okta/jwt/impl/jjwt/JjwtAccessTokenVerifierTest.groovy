@@ -26,9 +26,10 @@ import io.jsonwebtoken.io.JacksonSerializer
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 
-import java.time.Duration
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import org.threeten.bp.Duration
+import org.threeten.bp.Instant
+import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.DateTimeUtils
 
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.Matchers.hasItem
@@ -92,9 +93,9 @@ class JjwtAccessTokenVerifierTest extends TokenVerifierTestSupport{
         def bodyMap = new DefaultClaims()
             .setIssuer(TEST_ISSUER)
             .setAudience(TEST_AUDIENCE_ID)
-            .setIssuedAt(Date.from(now))
-            .setNotBefore(Date.from(now))
-            .setExpiration(Date.from(now.plus(1L, ChronoUnit.HOURS)))
+            .setIssuedAt(DateTimeUtils.toDate(now))
+            .setNotBefore(DateTimeUtils.toDate(now))
+            .setExpiration(DateTimeUtils.toDate(now.plus(1L, ChronoUnit.HOURS)))
 
         return serializer.serialize(bodyMap)
     }

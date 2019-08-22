@@ -15,7 +15,6 @@
  */
 package com.okta.jwt.impl.http;
 
-import com.okta.commons.lang.ApplicationInfo;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -23,7 +22,7 @@ import okhttp3.ResponseBody;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.time.Duration;
+import org.threeten.bp.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -32,10 +31,6 @@ import java.util.stream.Collectors;
  * a "runtime" dependency.
  */
 public class OkHttpClient implements HttpClient {
-
-    private static final String USER_AGENT = ApplicationInfo.get().entrySet().stream()
-            .map(entry -> entry.getKey() + "/" + entry.getValue())
-            .collect(Collectors.joining(" "));
 
     private final okhttp3.OkHttpClient client;
 
@@ -54,7 +49,6 @@ public class OkHttpClient implements HttpClient {
 
         Response response = client.newCall(new Request.Builder()
                 .url(url)
-                .header("User-Agent", USER_AGENT)
                 .build()).execute();
 
         if (response.isSuccessful()) {

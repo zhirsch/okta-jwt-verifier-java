@@ -28,7 +28,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SigningKeyResolver;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-import java.time.Duration;
+import org.threeten.bp.Duration;
+import org.threeten.bp.DateTimeUtils;
 
 abstract class TokenVerifierSupport {
 
@@ -60,8 +61,8 @@ abstract class TokenVerifierSupport {
         try {
             Jws<Claims> jwt = parser.parse(token, new OktaJwtHandler(claimsValidator));
             return new DefaultJwt(token,
-                    jwt.getBody().getIssuedAt().toInstant(),
-                    jwt.getBody().getExpiration().toInstant(),
+                    DateTimeUtils.toInstant(jwt.getBody().getIssuedAt()),
+                    DateTimeUtils.toInstant(jwt.getBody().getExpiration()),
                     jwt.getBody());
         } catch (JwtException e) {
             throw new JwtVerificationException("Failed to parse token", e);

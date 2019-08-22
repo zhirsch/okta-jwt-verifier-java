@@ -21,12 +21,11 @@
         <groupId>com.okta</groupId>
         <artifactId>okta-parent</artifactId>
         <version>13</version>
-        <relativePath>../okta-java-parent</relativePath>
     </parent>
 
     <groupId>com.okta.jwt</groupId>
     <artifactId>okta-jwt-verifier-parent</artifactId>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>0.4.0~amway</version>
     <name>Okta JWT Verifier :: Parent</name>
     <packaging>pom</packaging>
 
@@ -34,6 +33,8 @@
         <github.slug>okta/okta-jwt-verifier-java</github.slug>
         <okhttp.version>3.11.0</okhttp.version>
         <okta.commons.version>1.1.1</okta.commons.version>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <modules>
@@ -51,17 +52,17 @@
             <dependency>
                 <groupId>com.okta.jwt</groupId>
                 <artifactId>okta-jwt-verifier</artifactId>
-                <version>0.4.1-SNAPSHOT</version>
+                <version>0.4.0~amway</version>
             </dependency>
             <dependency>
                 <groupId>com.okta.jwt</groupId>
                 <artifactId>okta-jwt-verifier-impl</artifactId>
-                <version>0.4.1-SNAPSHOT</version>
+                <version>0.4.0~amway</version>
             </dependency>
             <dependency>
                 <groupId>com.okta.jwt</groupId>
                 <artifactId>okta-jwt-verifier-integration-tests</artifactId>
-                <version>0.4.1-SNAPSHOT</version>
+                <version>0.4.0~amway</version>
             </dependency>
 
             <dependency>

@@ -21,8 +21,9 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.testng.annotations.Test
 
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import org.threeten.bp.Instant
+import org.threeten.bp.temporal.ChronoUnit
+import org.threeten.bp.DateTimeUtils
 
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.notNullValue
@@ -45,9 +46,9 @@ class AccessTokenVerifierIT extends TokenVerifierITSupport {
                 .setAudience("api://default")
                 .setSubject("joe.coder@example.com")
                 .setIssuer(url.toExternalForm())
-                .setIssuedAt(Date.from(now))
-                .setNotBefore(Date.from(now))
-                .setExpiration(Date.from(now.plus(1L, ChronoUnit.HOURS)))
+                .setIssuedAt(DateTimeUtils.toDate(now))
+                .setNotBefore(DateTimeUtils.toDate(now))
+                .setExpiration(DateTimeUtils.toDate(now.plus(1L, ChronoUnit.HOURS)))
                 .setHeader(Jwts.jwsHeader()
                     .setKeyId(TEST_PUB_KEY_ID_1))
                 .signWith(TEST_KEY_PAIR_1.getPrivate(), SignatureAlgorithm.RS256)
@@ -57,9 +58,9 @@ class AccessTokenVerifierIT extends TokenVerifierITSupport {
                 .setAudience("api://default")
                 .setSubject("joe.coder@example.com")
                 .setIssuer(url.toExternalForm())
-                .setIssuedAt(Date.from(now))
-                .setNotBefore(Date.from(now))
-                .setExpiration(Date.from(now.plus(1L, ChronoUnit.HOURS)))
+                .setIssuedAt(DateTimeUtils.toDate(now))
+                .setNotBefore(DateTimeUtils.toDate(now))
+                .setExpiration(DateTimeUtils.toDate(now.plus(1L, ChronoUnit.HOURS)))
                 .setHeader(Jwts.jwsHeader()
                     .setKeyId(TEST_PUB_KEY_ID_2))
                 .signWith(TEST_KEY_PAIR_2.getPrivate(), SignatureAlgorithm.RS256)
